@@ -35,7 +35,11 @@ BEGIN
 END$
 DELIMITER ;
 
--- Assuming there are no existing records where loans.borrower_id = 2, the next insert should fail
+-- Prerequisites:
+  -- No existing records where loans.borrower_id = 2
+  -- A borrower with id=2, whose borrower_type is 'Guest' (allowed to loan only 1 book)
+  -- A book_copy with id=3
+-- The next insert should succeed
 INSERT INTO loans (loan_period, loaned_at, borrower_id, book_copy_number) VALUES (84, DATE_SUB(NOW(), INTERVAL 3 DAY), 2, 3);
 -- The next insert should fail
 INSERT INTO loans (loan_period, loaned_at, borrower_id, book_copy_number) VALUES (84, DATE_SUB(NOW(), INTERVAL 3 DAY), 2, 3);

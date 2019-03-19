@@ -8,8 +8,8 @@ CREATE FUNCTION `book_copy_available`(title varchar(64))
 DELIMITER ;
 
 -- Assuming the data from dummies was inserted:
-SELECT book_copy_available('Media Manager 1'); -- Should return 0
-SELECT book_copy_available('Quality Engineer'); -- Should return 1
+SELECT book_copy_available('Media Manager 1'); -- Will return 0
+SELECT book_copy_available('Quality Engineer'); -- Will return 1
 
 
 DROP PROCEDURE IF EXISTS `find_all_borrowers_of_title`;
@@ -25,8 +25,9 @@ BEGIN
 END$
 DELIMITER ;
 
-CALL find_all_borrowers_of_title('Media Manager I');
-CALL find_all_borrowers_of_title('Quality Engineer');
+-- Assuming the data from dummies was inserted:
+CALL find_all_borrowers_of_title('Media Manager I'); -- Will show 3 records
+CALL find_all_borrowers_of_title('Quality Engineer'); -- Will show 3 records
 
 
 DROP PROCEDURE IF EXISTS `find_current_borrowers_of_title`;
