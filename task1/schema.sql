@@ -30,7 +30,7 @@ CREATE TABLE courses (
 
 CREATE TABLE teams (
   id             int unsigned NOT NULL AUTO_INCREMENT,
-  course_id      int unsigned NOT NULL,
+  course_id      int unsigned NOT NULL,  -- TODO: Can multiple teams teach the same course?
   min_team_size  tinyint(1) unsigned, -- Number of minimum instructors required per team
   max_team_size  tinyint(1) unsigned, -- Number of maximum instructors allowed per team
   PRIMARY KEY (id),
