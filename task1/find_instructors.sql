@@ -10,5 +10,5 @@ BEGIN
 END$
 DELIMITER ;
 
--- Assuming the data from dummies was inserted:
+-- Assuming the data from `dummies.sql` was inserted:
 CALL find_instructors_for_course('Databases for Developers'); -- Will show 2 records

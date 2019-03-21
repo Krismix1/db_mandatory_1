@@ -56,3 +56,6 @@ INSERT INTO teams_instructors (instructor_id, team_id) VALUES (24, 2);
 INSERT INTO teams_instructors (instructor_id, team_id) VALUES (26, 2);
 INSERT INTO teams_instructors (instructor_id, team_id) VALUES (27, 3);
 INSERT INTO teams_instructors (instructor_id, team_id) VALUES (19, 7);
+
+
+INSERT INTO training_sessions() VALUES (); -- id: 1
