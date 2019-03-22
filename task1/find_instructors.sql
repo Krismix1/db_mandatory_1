@@ -1,3 +1,5 @@
+USE it_company;
+
 DROP PROCEDURE IF EXISTS `find_instructors_for_course`;
 DELIMITER $
 -- Procedure to find all instructor for a course

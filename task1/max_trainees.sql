@@ -1,3 +1,5 @@
+USE it_company;
+
 DROP PROCEDURE IF EXISTS `check_max_trainees_per_session`;
 DELIMITER $
 CREATE PROCEDURE `check_max_trainees_per_session`(IN session_id int unsigned)
@@ -30,5 +32,5 @@ DELIMITER ;
 -- Assuming the data for table `training_sessions` from `dummies.sql` was inserted:
 INSERT INTO trainees() VALUES (), (), (), (), ();
 INSERT INTO training_sessions_trainees(session_id, trainee_id) VALUES (1, 1), (1, 2), (1, 3), (1, 4), (1, 5);
--- The line below will fail (with condition that only '5' trainees are allowed per training session)
+-- The line below will fail (with error that only '5' trainees are allowed per training session)
 INSERT INTO training_sessions_trainees(session_id, trainee_id) VALUES (1, 6);
