@@ -1,4 +1,5 @@
-USE it_company;
+\q
+psql -d it_company;
 
 INSERT INTO courses (name) VALUES ('Automation Specialist I');
 INSERT INTO courses (name) VALUES ('Databases for Developers');
@@ -7,14 +8,14 @@ INSERT INTO courses (name) VALUES ('Quality Engineer');
 INSERT INTO courses (name) VALUES ('Food Chemist');
 
 
-INSERT INTO teams (course_id, min_team_size, max_team_size) VALUES (2, 2, 30); -- id: 1, The requirements tell that the company has 30 instructors
-INSERT INTO teams (course_id, min_team_size, max_team_size) VALUES (1, 2, 30); -- id: 2, The requirements tell that the company has 30 instructors
-INSERT INTO teams (course_id, min_team_size, max_team_size) VALUES (3, 2, 30); -- id: 3, The requirements tell that the company has 30 instructors
-INSERT INTO teams (course_id, min_team_size, max_team_size) VALUES (2, 2, 30); -- id: 4, The requirements tell that the company has 30 instructors
-INSERT INTO teams (course_id, min_team_size, max_team_size) VALUES (4, 2, 30); -- id: 5, The requirements tell that the company has 30 instructors
-INSERT INTO teams (course_id, min_team_size, max_team_size) VALUES (5, 2, 30); -- id: 6, The requirements tell that the company has 30 instructors
-INSERT INTO teams (course_id, min_team_size, max_team_size) VALUES (4, 2, 30); -- id: 7, The requirements tell that the company has 30 instructors
-INSERT INTO teams (course_id, min_team_size, max_team_size) VALUES (4, 2, 30); -- id: 8, used to test researchers & teams_instructors constraints
+INSERT INTO teams (course_id, max_team_size) VALUES (2, 30); -- id: 1, The requirements tell that the company has 30 instructors
+INSERT INTO teams (course_id, max_team_size) VALUES (1, 30); -- id: 2, The requirements tell that the company has 30 instructors
+INSERT INTO teams (course_id, max_team_size) VALUES (3, 30); -- id: 3, The requirements tell that the company has 30 instructors
+INSERT INTO teams (course_id, max_team_size) VALUES (2, 30); -- id: 4, The requirements tell that the company has 30 instructors
+INSERT INTO teams (course_id, max_team_size) VALUES (4, 30); -- id: 5, The requirements tell that the company has 30 instructors
+INSERT INTO teams (course_id, max_team_size) VALUES (5, 30); -- id: 6, The requirements tell that the company has 30 instructors
+INSERT INTO teams (course_id, max_team_size) VALUES (4, 30); -- id: 7, The requirements tell that the company has 30 instructors
+INSERT INTO teams (course_id, max_team_size) VALUES (4, 30); -- id: 8, used to test researchers & teams_instructors constraints
 
 
 INSERT INTO instructors (name) VALUES ('Angelique Moreside');     -- id: 1
@@ -64,4 +65,4 @@ INSERT INTO teams_instructors VALUES (7, 19);
 INSERT INTO researchers VALUES (29);
 
 
-INSERT INTO training_sessions() VALUES (); -- id: 1
+INSERT INTO training_sessions (team_id) VALUES (1); -- id: 1

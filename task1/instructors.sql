@@ -1,89 +1,68 @@
-USE it_company;
+\q
+psql -d it_company;
 
 -- An instructor cannot be part of `researchers` and `teams_instructors`
 -- This solution requires explicit deletion of the instructor from those table before reassigning
-DROP FUNCTION IF EXISTS `is_instructor_in_table`;
-DELIMITER $
-CREATE FUNCTION `is_instructor_in_table`(id int unsigned, table_name varchar(64))
-  RETURNS tinyint(1) DETERMINISTIC
-    IF table_name = 'researchers' THEN
-      RETURN (SELECT EXISTS(SELECT 1 FROM researchers r WHERE r.instructor_id = id LIMIT 1));
-    ELSEIF table_name = 'teams_instructors' THEN
-      RETURN (SELECT EXISTS(SELECT 1 FROM teams_instructors r WHERE r.instructor_id = id LIMIT 1));
-    ELSE
-      SIGNAL SQLSTATE '47000'
-        SET MESSAGE_TEXT = 'unknown table';
-    END IF;$
-
-
--- Check that an instructor is not already assigned as a researcher
-DROP TRIGGER IF EXISTS `check_instructor_team_before_insert`$
--- Before create
-CREATE TRIGGER `check_instructor_team_before_insert` BEFORE INSERT ON `teams_instructors`
-FOR EACH ROW
+CREATE OR REPLACE FUNCTION is_instructor_in_table(id bigint, table_name varchar(64))
+  RETURNS boolean AS $$
 BEGIN
-  IF (SELECT is_instructor_in_table(new.instructor_id, 'researchers')) = 1 THEN
-    SIGNAL SQLSTATE '47001'
-      SET MESSAGE_TEXT = 'instructor is already a researcher';
-  ELSE BEGIN
-    DECLARE i tinyint(1) DEFAULT 0;
-    SELECT COUNT(1) INTO i FROM teams_instructors t WHERE t.instructor_id = new.instructor_id;
-    IF i >= 2 THEN
-      SIGNAL SQLSTATE '47003'
-        SET MESSAGE_TEXT = 'instructor can only be part of 2 teams';
-    END IF;
-    END;
+  IF table_name = 'researchers' THEN
+    RETURN (SELECT EXISTS(SELECT 1 FROM researchers r WHERE r.instructor_id = id LIMIT 1));
+  ELSEIF table_name = 'teams_instructors' THEN
+    RETURN (SELECT EXISTS(SELECT 1 FROM teams_instructors r WHERE r.instructor_id = id LIMIT 1));
+  ELSE
+    RAISE EXCEPTION 'unknown table %', table_name USING ERRCODE='47000';
   END IF;
-  -- Check if maximum number of members per team is not exhausted
-  DECLARE i tinyint(1) unsigned DEFAULT 0;
-  DECLARE max_team_size tinyint(1) unsigned DEFAULT 0;
-  SELECT COUNT(1) INTO i FROM teams_instructors t WHERE t.team_id = new.team_id;
-  SELECT t.max_team_size INTO max_team_size FROM teams t WHERE t.id = new.team_id;
+END$$ LANGUAGE plpgsql;
 
-END$
--- Before update
-DROP TRIGGER IF EXISTS `check_instructor_teams_before_update`$
-CREATE TRIGGER `check_instructor_teams_before_update` BEFORE UPDATE ON `teams_instructors`
-FOR EACH ROW
+
+-- Check instructor is not in researchers
+CREATE OR REPLACE FUNCTION check_instructor_in_researchers() RETURNS trigger
+LANGUAGE plpgsql AS $$
 BEGIN
-  IF (SELECT is_instructor_in_table(new.instructor_id, 'researchers')) = 1 THEN
-    SIGNAL SQLSTATE '47001'
-      SET MESSAGE_TEXT = 'instructor is already a researcher';
-  ELSE BEGIN
-    DECLARE i tinyint(1) DEFAULT 0;
-    SELECT COUNT(1) INTO i FROM teams_instructors t WHERE t.instructor_id = new.instructor_id;
-    IF i >= 2 THEN
-      SIGNAL SQLSTATE '47003'
-        SET MESSAGE_TEXT = 'instructor can only be part of 2 teams';
-    END IF;
-    END;
+  IF is_instructor_in_table(new.instructor_id, CAST('researchers' as varchar(64))) THEN
+    RAISE EXCEPTION 'instructor #% is already a researcher', new.instructor_id
+      USING ERRCODE='47001';
   END IF;
-END$
+  RETURN new;
+END$$;
 
+DROP TRIGGER IF EXISTS instructor_in_researchers_constraint ON teams_instructors CASCADE;
+CREATE TRIGGER instructor_in_researchers_constraint BEFORE INSERT OR UPDATE ON teams_instructors
+  FOR EACH ROW EXECUTE PROCEDURE check_instructor_in_researchers();
 
 -- Check that an instructor is not already assigned to a teaching team
-DROP TRIGGER IF EXISTS `check_instructor_researcher_before_insert`$
--- Before create
-CREATE TRIGGER `check_instructor_researcher_before_insert` BEFORE INSERT ON `researchers`
-FOR EACH ROW
+CREATE OR REPLACE FUNCTION check_instructor_in_team() RETURNS trigger
+LANGUAGE plpgsql AS $$
 BEGIN
-  IF (SELECT is_instructor_in_table(new.instructor_id, 'teams_instructors')) = 1 THEN
-    SIGNAL SQLSTATE '47002'
-      SET MESSAGE_TEXT = 'instructor is already in a teaching team';
+  IF is_instructor_in_table(new.instructor_id, CAST('teams_instructors' as varchar(64))) THEN
+    RAISE EXCEPTION 'instructor #% is already in a team', new.instructor_id
+      USING ERRCODE='47002';
   END IF;
-END$
--- Before update
-DROP TRIGGER IF EXISTS `check_instructor_researcher_before_update`$
-CREATE TRIGGER `check_instructor_researcher_before_update` BEFORE UPDATE ON `researchers`
-FOR EACH ROW
-BEGIN
-  IF (SELECT is_instructor_in_table(new.instructor_id, 'teams_instructors')) = 1 THEN
-    SIGNAL SQLSTATE '47002'
-      SET MESSAGE_TEXT = 'instructor is already in a teaching team';
-  END IF;
-END$
+  RETURN new;
+END$$;
 
-DELIMITER ;
+DROP TRIGGER IF EXISTS instructor_in_team_constraint ON researchers CASCADE;
+CREATE TRIGGER instructor_in_team_constraint BEFORE INSERT OR UPDATE ON researchers
+  FOR EACH ROW EXECUTE PROCEDURE check_instructor_in_team();
+
+
+CREATE OR REPLACE FUNCTION max_teams_per_instructor() RETURNS trigger
+LANGUAGE plpgsql AS $$
+DECLARE
+  i smallint DEFAULT 0;
+BEGIN
+  SELECT COUNT(1) INTO i FROM teams_instructors t WHERE t.instructor_id = new.instructor_id LIMIT 2;
+  IF i >= 2 THEN
+    RAISE EXCEPTION 'instructor #% is already in 2 teams', new.instructor_id
+      USING ERRCODE='47003';
+  END IF;
+  RETURN new;
+END$$;
+-- trigger
+DROP TRIGGER IF EXISTS instructor_in_team_constraint ON teams_instructors CASCADE;
+CREATE TRIGGER instructor_in_team_constraint BEFORE INSERT OR UPDATE ON teams_instructors
+  FOR EACH ROW EXECUTE PROCEDURE max_teams_per_instructor();
 
 
 -- Assuming the data for table `training_sessions` from `dummies.sql` was inserted:
