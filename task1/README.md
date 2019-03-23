@@ -10,7 +10,7 @@ The solution is done for [PostgreSQL 9.6](https://www.postgresql.org/docs/9.6/in
   - `tests.sql` - DML statements to test the data validation triggers
 
 
-#### Order of execution to complete task 2:
+#### Order of execution to complete task 1:
   1. `schema.sql`
   2. `triggers_functions.sql`
   3. `dummies.sql` (Optional)
