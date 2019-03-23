@@ -1,3 +1,5 @@
+USE library;
+
 DROP PROCEDURE IF EXISTS `check_max_loan`;
 DELIMITER $
 -- , IN copy_id int unsigned

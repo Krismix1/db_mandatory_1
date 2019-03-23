@@ -1,3 +1,5 @@
+USE library;
+
 DROP FUNCTION IF EXISTS `book_copy_available`;
 DELIMITER $
 CREATE FUNCTION `book_copy_available`(title varchar(64))

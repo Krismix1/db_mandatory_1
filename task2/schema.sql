@@ -23,8 +23,8 @@ CREATE TABLE book_copies (
 
 CREATE TABLE borrower_types (
   id               int unsigned NOT NULL AUTO_INCREMENT,
-  name             varchar(16) NOT NULL UNIQUE, -- not empty
-  max_books_count  tinyint unsigned NOT NULL, -- > 0?
+  name             varchar(16) NOT NULL UNIQUE, -- not empty?
+  max_books_count  tinyint(1) unsigned NOT NULL, -- should be > 0 ?
   PRIMARY KEY (id)
 );
 

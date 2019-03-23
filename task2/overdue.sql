@@ -1,3 +1,5 @@
+USE library;
+
 DROP PROCEDURE IF EXISTS `find_all_borrowers_with_overdue`;
 DELIMITER $
 CREATE PROCEDURE `find_all_borrowers_with_overdue`()
