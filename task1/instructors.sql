@@ -34,6 +34,12 @@ BEGIN
     END IF;
     END;
   END IF;
+  -- Check if maximum number of members per team is not exhausted
+  DECLARE i tinyint(1) unsigned DEFAULT 0;
+  DECLARE max_team_size tinyint(1) unsigned DEFAULT 0;
+  SELECT COUNT(1) INTO i FROM teams_instructors t WHERE t.team_id = new.team_id;
+  SELECT t.max_team_size INTO max_team_size FROM teams t WHERE t.id = new.team_id;
+
 END$
 -- Before update
 DROP TRIGGER IF EXISTS `check_instructor_teams_before_update`$
