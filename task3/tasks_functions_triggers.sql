@@ -41,7 +41,9 @@ Create Trigger before_cancellation BEFORE UPDATE ON bookings FOR EACH ROW
     END IF;
   END //
 --to prove:
---drop trigger if exists before_cancellation_insert ;
+--update bookings set is_cancelled=true where bookingID=9014;
+
+drop trigger if exists before_cancellation_insert ;
 
 DELIMITER //
 Create Trigger before_cancellation_insert BEFORE INSERT ON bookings FOR EACH ROW
