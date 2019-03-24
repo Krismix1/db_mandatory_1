@@ -11,5 +11,5 @@ The solution is done using MySQL.
 
 #### Order of execution to complete task 1:
   1. `schema.sql`
-  2. `dummies.sql` (Optional)
+  2. `mockdata.sql` (Optional)
   3. `tasks_functions_triggers.sql` 
